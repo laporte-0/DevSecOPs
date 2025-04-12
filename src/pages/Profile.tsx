@@ -1,5 +1,11 @@
-import { auth } from "../Config/firebaseConfigs";
 import { useEffect, useState } from "react";
+import { auth } from "../Config/firebaseConfigs";
+import GitHubCard from "../components/GitHubCard";
+import GitHubSummary from "../components/GitHubSummary";
+import GitHubLanguagesDonut from "../components/GitHubLanguagesDonut";
+import GitHubActivityCalendar from "../components/GitHubActivityCalendar";
+import RecentCommits from "../components/RecentCommits";
+import StarChart from "../components/StarChart";
 
 export default function Profile() {
   const user = auth.currentUser;
@@ -21,8 +27,8 @@ export default function Profile() {
   if (!user) return <div className="p-6">Utilisateur non connecté.</div>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow space-y-6">
-      {/* BANNIÈRE */}
+    <div className="max-w-5xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow space-y-10">
+      {/* Bannière utilisateur */}
       <div className="relative h-32 w-full rounded-lg bg-gradient-to-r from-gray-700 to-blue-600 shadow-inner">
         <img
           src={user.photoURL || ""}
@@ -31,7 +37,7 @@ export default function Profile() {
         />
       </div>
 
-      {/* INFOS UTILISATEUR */}
+      {/* Infos personnelles */}
       <div className="pt-12 px-2 space-y-2">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           {user.displayName || "Inconnu"}
@@ -51,6 +57,21 @@ export default function Profile() {
           {new Date(user.metadata.lastSignInTime || "").toLocaleString("fr-FR")}
         </p>
       </div>
+
+      {/* GitHubCard rapide */}
+      <GitHubCard />
+
+      {/* Section GitHub Insights */}
+      <section className="pt-8 border-t mt-6">
+        <h2 className="text-xl font-semibold mb-4">📊 GitHub Insights</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <GitHubSummary />
+          <GitHubLanguagesDonut />
+          <StarChart />
+          <GitHubActivityCalendar />
+          <RecentCommits />
+        </div>
+      </section>
     </div>
   );
 }

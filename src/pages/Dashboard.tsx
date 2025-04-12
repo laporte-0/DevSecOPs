@@ -5,6 +5,9 @@ import ScanHistorySection from "../components/ScanHistorySection";
 import OverviewSection from "../components/OverviewSection";
 import VulnerabilitySection from "../components/VulnerabilitySection";
 import ActivitySection from "../components/ActivitySection";
+import GitHubCard from "../components/GitHubCard";
+import RepoList from "../components/RepoList";
+import GitHubSidebar from "../components/GitHubSidebar";
 
 const mockScoreHistory: {
   [projectId: string]: { date: string; score: number }[];
@@ -144,22 +147,31 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {activeTab === "overview" && (
-        <OverviewSection
-          projectData={projectData}
-          handleScan={handleScan}
-          isScanning={isScanning}
-          scanMessage={scanMessage}
-          scoreHistory={scoreHistory}
-        />
-      )}
-      {activeTab === "vulns" && (
-        <VulnerabilitySection vulnerabilities={mockVulns} />
-      )}
-      {activeTab === "history" && <ScanHistorySection />}
-      {activeTab === "activity" && (
-        <ActivitySection projectData={projectData} />
-      )}
+      {/* Layout principal + GitHub sidebar */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex-1 space-y-6">
+          {activeTab === "overview" && (
+            <OverviewSection
+              projectData={projectData}
+              handleScan={handleScan}
+              isScanning={isScanning}
+              scanMessage={scanMessage}
+              scoreHistory={scoreHistory}
+            />
+          )}
+          {activeTab === "vulns" && (
+            <VulnerabilitySection vulnerabilities={mockVulns} />
+          )}
+          {activeTab === "history" && <ScanHistorySection />}
+          {activeTab === "activity" && (
+            <ActivitySection projectData={projectData} />
+          )}
+        </div>
+
+        <aside className="shrink-0">
+          <GitHubSidebar />
+        </aside>
+      </div>
     </div>
   );
 }
