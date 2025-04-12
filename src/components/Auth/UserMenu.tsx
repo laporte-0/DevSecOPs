@@ -1,5 +1,5 @@
 import { Menu, Transition } from "@headlessui/react";
-import { ChevronDown, LogOut, Settings } from "lucide-react";
+import { ChevronDown, LogOut, Settings, User } from "lucide-react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../Config/firebaseConfigs";
 import { useNavigate } from "react-router-dom";
@@ -65,6 +65,18 @@ export default function UserMenu() {
                     } flex items-center w-full px-4 py-2 text-red-600`}
                   >
                     <LogOut className="w-4 h-4 mr-2" /> Déconnexion
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className={`${
+                      active ? "bg-gray-100" : ""
+                    } flex items-center w-full px-4 py-2`}
+                  >
+                    <User className="w-4 h-4 mr-2" /> Mon profil
                   </button>
                 )}
               </Menu.Item>

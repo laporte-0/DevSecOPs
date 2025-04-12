@@ -10,6 +10,7 @@ import PrivateRoute from "./routes/PrivateRoutes";
 import { AuthProvider } from "./Contexts/AuthContext";
 import Organizations from "./pages/Organisations";
 import OrganizationDetails from "./pages/OrganisationsDetails";
+import Profile from "./pages/Profile";
 function App() {
   return (
     <BrowserRouter>
@@ -33,6 +34,8 @@ function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="chatbot" element={<Chatbot />} />
             <Route path="organizations" element={<Organizations />} />
+            <Route path="profile" element={<Profile />} />
+
             <Route
               path="organizations/:orgId"
               element={<OrganizationDetails />}

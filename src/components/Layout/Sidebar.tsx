@@ -12,24 +12,23 @@ const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: GitBranch, label: "Pipelines", path: "/pipelines" },
   { icon: LineChart, label: "Insights", path: "/insights" },
+  { icon: Users, label: "Organizations", path: "/organizations" },
   { icon: Settings, label: "Settings", path: "/settings" },
   { icon: MessageSquareMore, label: "Chatbot", path: "/chatbot" },
-  { icon: Users, label: "Organizations", path: "/organizations" },
 ];
 
 export default function Sidebar() {
   const location = useLocation();
 
   return (
-    <div className="h-full w-64 bg-gray-900 text-white p-4">
+    <div className="h-full w-64 bg-gray-900 text-white dark:bg-gray-950 dark:text-gray-100 p-4">
       <div className="mb-8">
         <h1 className="text-xl font-bold px-4">DevPortal</h1>
       </div>
       <nav className="space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname.startsWith(item.path); // ✅ correction ici
-
+          const isActive = location.pathname.startsWith(item.path);
           return (
             <Link
               key={item.path}
