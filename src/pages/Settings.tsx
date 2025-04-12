@@ -1,89 +1,91 @@
-import { useState, useEffect } from "react";
-import {
-  mockProjects,
-  mockSettings,
-  ProjectKey,
-} from "../services/mockProjects";
+import { useState } from "react";
+import { updateProfile, updateEmail } from "firebase/auth";
+import { auth } from "../Config/firebaseConfigs";
 
 export default function Settings() {
-  const [selectedProjectId, setSelectedProjectId] =
-    useState<ProjectKey>("projectA");
-  const [settings, setSettings] = useState(mockSettings["projectA"]);
+  const user = auth.currentUser;
+  const [displayName, setDisplayName] = useState(user?.displayName || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [photoURL, setPhotoURL] = useState(user?.photoURL || "");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    setSettings(mockSettings[selectedProjectId]);
-  }, [selectedProjectId]);
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage("");
+    setError("");
+
+    try {
+      if (user) {
+        await updateProfile(user, {
+          displayName,
+          photoURL,
+        });
+
+        if (user.email !== email) {
+          await updateEmail(user, email);
+        }
+
+        setMessage("✅ Profil mis à jour avec succès.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError("❌ Erreur lors de la mise à jour : " + err.message);
+    }
+  };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Project Settings</h1>
-        <select
-          value={selectedProjectId}
-          onChange={(e) => setSelectedProjectId(e.target.value as ProjectKey)}
-          className="border px-3 py-1 rounded-lg"
-        >
-          {mockProjects.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Settings Panel */}
-      <div className="bg-white border rounded-lg shadow-sm p-6 space-y-6">
-        {/* Notifications */}
+    <div className="max-w-xl mx-auto bg-white p-6 rounded-lg shadow">
+      <h2 className="text-2xl font-semibold mb-4">Paramètres de profil</h2>
+      <form onSubmit={handleUpdate} className="space-y-4">
         <div>
-          <h2 className="text-lg font-medium mb-2">Notifications</h2>
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={settings.notifications.email}
-                readOnly
-              />
-              <span>Email Alerts</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={settings.notifications.slack}
-                readOnly
-              />
-              <span>Slack Alerts</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Threshold */}
-        <div>
-          <h2 className="text-lg font-medium mb-2">Security Alert Threshold</h2>
-          <p className="text-sm text-gray-600 mb-2">
-            Receive alerts when the security score drops below this value.
-          </p>
+          <label className="block font-medium mb-1">Nom affiché</label>
           <input
-            type="number"
-            value={settings.alertThreshold}
-            readOnly
-            className="border rounded px-3 py-1 w-20"
+            type="text"
+            className="w-full border px-4 py-2 rounded"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
           />
         </div>
-
-        {/* GitHub Integration */}
         <div>
-          <h2 className="text-lg font-medium mb-2">GitHub Integration</h2>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={settings.githubIntegration}
-              readOnly
-            />
-            <span>Enable GitHub Webhook Integration</span>
-          </label>
+          <label className="block font-medium mb-1">Adresse Email</label>
+          <input
+            type="email"
+            className="w-full border px-4 py-2 rounded"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
-      </div>
+        <div>
+          <label className="block font-medium mb-1">
+            Photo de profil (URL)
+          </label>
+          <input
+            type="text"
+            className="w-full border px-4 py-2 rounded"
+            value={photoURL}
+            onChange={(e) => setPhotoURL(e.target.value)}
+          />
+        </div>
+        {photoURL && (
+          <div className="mt-2">
+            <img
+              src={photoURL}
+              alt="preview"
+              className="w-16 h-16 rounded-full object-cover border"
+            />
+          </div>
+        )}
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Enregistrer les modifications
+        </button>
+      </form>
+
+      {message && <p className="mt-4 text-green-600">{message}</p>}
+      {error && <p className="mt-4 text-red-600">{error}</p>}
     </div>
   );
 }

@@ -1,13 +1,12 @@
-import { useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { ChevronDown, LogOut, Settings, User } from "lucide-react";
+import { ChevronDown, LogOut, Settings } from "lucide-react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../Config/firebaseConfigs";
 import { useNavigate } from "react-router-dom";
 
 export default function UserMenu() {
-  const [userEmail] = useState(auth.currentUser?.email || "Utilisateur");
   const navigate = useNavigate();
+  const user = auth.currentUser;
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -18,10 +17,23 @@ export default function UserMenu() {
     <div className="relative inline-block text-left">
       <Menu>
         <Menu.Button className="inline-flex items-center gap-2 px-4 py-2 bg-white border rounded-md shadow-sm hover:bg-gray-50">
-          <User className="w-5 h-5 text-gray-600" />
-          <span className="text-sm font-medium text-gray-700">{userEmail}</span>
+          {user?.photoURL ? (
+            <img
+              src={user.photoURL}
+              alt="avatar"
+              className="h-8 w-8 rounded-full object-cover"
+            />
+          ) : (
+            <div className="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center text-white font-bold">
+              {user?.displayName?.[0] || "?"}
+            </div>
+          )}
+          <span className="text-sm font-medium text-gray-700">
+            {user?.displayName || "Utilisateur"}
+          </span>
           <ChevronDown className="w-4 h-4 text-gray-600" />
         </Menu.Button>
+
         <Transition
           enter="transition duration-100 ease-out"
           enterFrom="transform scale-95 opacity-0"

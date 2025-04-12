@@ -1,12 +1,20 @@
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, GitBranch, LineChart, Settings, MessageSquareMore } from 'lucide-react';
+import { Link, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  GitBranch,
+  LineChart,
+  Settings,
+  MessageSquareMore,
+  Users,
+} from "lucide-react";
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-  { icon: GitBranch, label: 'Pipelines', path: '/pipelines' },
-  { icon: LineChart, label: 'Insights', path: '/insights' },
-  { icon: Settings, label: 'Settings', path: '/settings' },
-  { icon: MessageSquareMore, label: 'Chatbot', path: '/chatbot' },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
+  { icon: GitBranch, label: "Pipelines", path: "/pipelines" },
+  { icon: LineChart, label: "Insights", path: "/insights" },
+  { icon: Settings, label: "Settings", path: "/settings" },
+  { icon: MessageSquareMore, label: "Chatbot", path: "/chatbot" },
+  { icon: Users, label: "Organizations", path: "/organizations" },
 ];
 
 export default function Sidebar() {
@@ -20,15 +28,16 @@ export default function Sidebar() {
       <nav className="space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.path;
+          const isActive = location.pathname.startsWith(item.path); // ✅ correction ici
+
           return (
             <Link
               key={item.path}
               to={item.path}
               className={`flex items-center px-4 py-3 text-sm rounded-lg transition-colors ${
                 isActive
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-300 hover:bg-gray-800 hover:text-white"
               }`}
             >
               <Icon className="h-5 w-5 mr-3" />

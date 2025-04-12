@@ -6,10 +6,10 @@ import Insights from "./pages/Insights";
 import Settings from "./pages/Settings";
 import Chatbot from "./pages/Chatbot";
 import SignIn from "./components/Auth/SignIn";
-import Register from "./pages/Register";
 import PrivateRoute from "./routes/PrivateRoutes";
 import { AuthProvider } from "./Contexts/AuthContext";
-
+import Organizations from "./pages/Organisations";
+import OrganizationDetails from "./pages/OrganisationsDetails";
 function App() {
   return (
     <BrowserRouter>
@@ -17,7 +17,6 @@ function App() {
         <Routes>
           {/* Auth pages (no layout) */}
           <Route path="/login" element={<SignIn />} />
-          <Route path="/register" element={<Register />} />
 
           {/* Protected routes wrapped with layout */}
           <Route
@@ -33,6 +32,11 @@ function App() {
             <Route path="insights" element={<Insights />} />
             <Route path="settings" element={<Settings />} />
             <Route path="chatbot" element={<Chatbot />} />
+            <Route path="organizations" element={<Organizations />} />
+            <Route
+              path="organizations/:orgId"
+              element={<OrganizationDetails />}
+            />
           </Route>
         </Routes>
       </AuthProvider>

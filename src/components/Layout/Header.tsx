@@ -1,5 +1,6 @@
 import { Bell, Search } from "lucide-react";
 import UserMenu from "../Auth/UserMenu";
+import NotificationMenu from "./NotificationMenu";
 
 export default function Header() {
   return (
@@ -16,10 +17,7 @@ export default function Header() {
       </div>
 
       <div className="flex items-center space-x-4">
-        <button className="relative p-2 text-gray-600 hover:text-gray-900 focus:outline-none">
-          <Bell className="h-6 w-6" />
-          <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
-        </button>
+        <NotificationMenu />
 
         {/* Menu utilisateur (connexion, paramètres, logout) */}
         <UserMenu />
