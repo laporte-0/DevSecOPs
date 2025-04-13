@@ -17,8 +17,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setCurrentUser(user);
+        // Get fresh Firebase ID token and store it
+        const idToken = await user.getIdToken(true);
+        sessionStorage.setItem("firebaseIdToken", idToken);
+      } else {
+        setCurrentUser(null);
+        // User logged out — clear token
+        sessionStorage.removeItem("firebaseIdToken");
+      }
       setLoading(false);
     });
 
@@ -31,5 +40,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     </AuthContext.Provider>
   );
 };
+
 
 export const useAuth = () => useContext(AuthContext);

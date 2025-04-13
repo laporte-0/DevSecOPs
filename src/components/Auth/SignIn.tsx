@@ -9,8 +9,39 @@ const SignIn = () => {
   const handleGitHubLogin = async () => {
     try {
       const provider = new GithubAuthProvider();
-      await signInWithPopup(auth, provider);
-      navigate("/");
+      provider.setCustomParameters({
+        allow_signup: "true" // allow user to choose account, even if signed in
+      });
+
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const credential = GithubAuthProvider.credentialFromResult(result);
+      const accessToken = credential?.accessToken || "";
+      const idToken = await user.getIdToken();
+
+      // ✅ Store the Firebase ID token in sessionStorage
+      sessionStorage.setItem("firebaseIdToken", idToken);
+
+      // ✅ Send API call to backend with tokens
+      const response = await fetch("http://localhost:3000/api/users/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`
+        },
+        body: JSON.stringify({ accessToken })
+      });
+
+      // ✅ Save returned userData in localStorage
+      if (response.ok) {
+        const userData = await response.json();
+        console.log(userData)
+        localStorage.setItem("userData", JSON.stringify(userData));
+        navigate("/");
+      } else {
+        console.error("Failed to fetch user data from backend.");
+      }
     } catch (err: any) {
       console.error("Échec de l'authentification GitHub :", err.message);
     }
