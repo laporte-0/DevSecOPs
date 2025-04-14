@@ -55,12 +55,9 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen flex font-sans">
-      {/* Colonne gauche (branding) */}
+      {/* Branding */}
       <div className="w-1/2 bg-gray-900 text-white flex flex-col relative overflow-hidden">
-        {/* Effet lumineux en arrière-plan */}
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-800/30 via-transparent to-purple-900/30 z-0" />
-
-        {/* Logo en haut à gauche */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-800/30 via-transparent to-purple-900/30 z-0" />
         <div className="absolute left-5  z-10 flex items-center gap-3">
           <img
             src="/assets/DevPortalLogo.png"
@@ -69,16 +66,17 @@ const SignIn = () => {
           />
         </div>
 
-        {/* Slogan centré */}
         <div className="flex-1 flex items-center justify-center z-10">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold leading-tight text-white">
+          <div className="text-center px-8">
+            <h1 className="text-5xl font-bold leading-tight mb-4">
               &gt;build <br /> something <br /> great.
             </h1>
+            <p className="text-gray-300 text-lg">
+              Votre tableau de bord DevSecOps, sécurisé, connecté, élégant.
+            </p>
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="flex justify-between items-center text-sm text-gray-400 p-10 z-10">
           <div className="space-x-4">
             <a href="#" className="hover:underline">
@@ -97,33 +95,30 @@ const SignIn = () => {
         </footer>
       </div>
 
-      {/* Colonne droite (formulaire GitHub) */}
+      {/* Connexion */}
       <div className="w-1/2 bg-white flex items-center justify-center p-10 relative">
-        {/* Coin vert décoratif */}
-        <div className="absolute bottom-0 right-0 h-24 w-24 bg-green-400 rounded-tl-3xl"></div>
+        <div className="absolute bottom-0 right-0 h-24 w-24 bg-green-400 rounded-tl-3xl" />
 
-        {/* Carte de connexion */}
-        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-md p-8 z-10">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
-            Connexion à DevPortal
+        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-xl shadow-xl p-8 z-10">
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+            Se connecter à DevPortal
           </h2>
 
           <button
             onClick={handleGitHubLogin}
             disabled={loading}
-            className={`w-full flex items-center justify-center gap-2 bg-black text-white py-2 px-4 rounded-md transition duration-300 ${
+            className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md font-medium text-white transition duration-300 ${
               loading
-                ? "opacity-70 cursor-not-allowed"
-                : "hover:bg-gray-800 hover:scale-[1.02]"
+                ? "bg-gray-700 opacity-70 cursor-not-allowed"
+                : "bg-gray-900 hover:bg-gray-800 hover:scale-[1.02]"
             }`}
           >
             {loading ? (
               <>
                 <svg
                   className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
                   viewBox="0 0 24 24"
+                  fill="none"
                 >
                   <circle
                     className="opacity-25"
@@ -147,6 +142,7 @@ const SignIn = () => {
                   className="h-5 w-5"
                   fill="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     fillRule="evenodd"
@@ -164,11 +160,19 @@ const SignIn = () => {
             <a href="#" className="underline">
               conditions
             </a>{" "}
-            et notre{" "}
+            et{" "}
             <a href="#" className="underline">
               politique de confidentialité
             </a>
             .
+          </p>
+          <p className="text-center text-sm text-gray-500 mt-6">
+            <a
+              href="/"
+              className="inline-block text-blue-600 hover:underline hover:text-blue-800"
+            >
+              ← Retour à l’accueil
+            </a>
           </p>
         </div>
       </div>
