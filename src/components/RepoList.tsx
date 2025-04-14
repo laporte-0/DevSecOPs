@@ -1,16 +1,43 @@
+import { useEffect, useState } from "react";
 import { auth } from "../Config/firebaseConfigs";
-import useGithubRepos from "../hooks/useGithubRepos";
+
+interface Repo {
+  id: string;
+  name: string;
+  html_url: string;
+  stargazers_count: number;
+  forks_count: number;
+  updated_at: string;
+}
 
 export default function RepoList() {
   const githubUsername = auth.currentUser?.providerData[0]?.uid;
-  const { repos, loading } = useGithubRepos(githubUsername);
+  const [repos, setRepos] = useState<Repo[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    try {
+      const userDataString = localStorage.getItem("userData");
+      if (!userDataString) {
+        setLoading(false);
+        return;
+      }
+
+      const userData = JSON.parse(userDataString);
+      setRepos(userData.repos || []);
+    } catch (error) {
+      console.error("Error reading repos from localStorage:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   if (!githubUsername) return null;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow border dark:border-gray-700">
       <h3 className="text-lg font-bold mb-3">
-        📦 Dépôts GitHub ({githubUsername})
+        📦 Dépôts GitHub 
       </h3>
       {loading ? (
         <p className="text-sm text-gray-500">Chargement des dépôts...</p>
@@ -19,7 +46,7 @@ export default function RepoList() {
       ) : (
         <ul className="space-y-2 text-sm">
           {repos.slice(0, 5).map((repo) => (
-            <li key={repo.id} className="border-b pb-2 last:border-none">
+            <li key={repo.id || repo.name} className="border-b pb-2 last:border-none">
               <a
                 href={repo.html_url}
                 target="_blank"

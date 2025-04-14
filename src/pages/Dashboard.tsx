@@ -5,8 +5,6 @@ import ScanHistorySection from "../components/ScanHistorySection";
 import OverviewSection from "../components/OverviewSection";
 import VulnerabilitySection from "../components/VulnerabilitySection";
 import ActivitySection from "../components/ActivitySection";
-import GitHubCard from "../components/GitHubCard";
-import RepoList from "../components/RepoList";
 import GitHubSidebar from "../components/GitHubSidebar";
 
 const mockScoreHistory: {

@@ -9,6 +9,12 @@ import StarChart from "../components/StarChart";
 
 export default function Profile() {
   const user = auth.currentUser;
+  let userName ; 
+  const userDataString = localStorage.getItem("userData");
+  if (userDataString){
+    const userData = JSON.parse(userDataString);
+    userName = userData.github.userName;
+  }
   const [created, setCreated] = useState("");
 
   useEffect(() => {
@@ -40,7 +46,7 @@ export default function Profile() {
       {/* Infos personnelles */}
       <div className="pt-12 px-2 space-y-2">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {user.displayName || "Inconnu"}
+          {userName || "Inconnu"}
         </h2>
         <p className="text-gray-600 dark:text-gray-300">📧 {user.email}</p>
         <p className="text-sm text-gray-500 dark:text-gray-400">

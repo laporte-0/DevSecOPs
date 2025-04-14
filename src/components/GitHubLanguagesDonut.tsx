@@ -25,32 +25,34 @@ export default function GitHubLanguagesDonut() {
   useEffect(() => {
     if (!username) return;
 
-    const fetchLangs = async () => {
-      const res = await fetch(
-        `https://api.github.com/users/${username}/repos`,
-        {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
-          },
-        }
-      );
-      const repos = await res.json();
-      const langCount: Record<string, number> = {};
+    const fetchLangsFromStorage = () => {
+      const userDataString = localStorage.getItem("userData");
+      if (!userDataString) return;
 
-      for (const repo of repos) {
-        if (repo.language) {
-          langCount[repo.language] = (langCount[repo.language] || 0) + 1;
+      try {
+        const userData = JSON.parse(userDataString);
+
+        // Assuming userData.user.github.repos contains the repository information
+        const repos = userData?.repos || [];
+        const langCount: Record<string, number> = {};
+
+        for (const repo of repos) {
+          if (repo.language) {
+            langCount[repo.language] = (langCount[repo.language] || 0) + 1;
+          }
         }
+
+        const pieData = Object.entries(langCount).map(([name, value]) => ({
+          name,
+          value,
+        }));
+        setData(pieData);
+      } catch (error) {
+        console.error("Error parsing user data from localStorage:", error);
       }
-
-      const pieData = Object.entries(langCount).map(([name, value]) => ({
-        name,
-        value,
-      }));
-      setData(pieData);
     };
 
-    fetchLangs();
+    fetchLangsFromStorage();
   }, [username]);
 
   if (!data.length) return null;

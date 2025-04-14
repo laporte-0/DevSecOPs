@@ -7,6 +7,13 @@ import { useNavigate } from "react-router-dom";
 export default function UserMenu() {
   const navigate = useNavigate();
   const user = auth.currentUser;
+  let userName ; 
+  const userDataString = localStorage.getItem("userData");
+  if (userDataString){
+    const userData = JSON.parse(userDataString);
+    userName = userData.github.userName;
+  }
+    
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -29,7 +36,7 @@ export default function UserMenu() {
             </div>
           )}
           <span className="text-sm font-medium text-gray-700">
-            {user?.displayName || "Utilisateur"}
+            {userName || "Utilisateur"}
           </span>
           <ChevronDown className="w-4 h-4 text-gray-600" />
         </Menu.Button>

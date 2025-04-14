@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../Config/firebaseConfigs";
+import { storeUserData } from "../../hooks/storeUserInfo";
+
+
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -21,6 +24,7 @@ const SignIn = () => {
       const credential = GithubAuthProvider.credentialFromResult(result);
       const accessToken = credential?.accessToken || "";
       const idToken = await user.getIdToken();
+      console.log(idToken)
 
       // ✅ Store the Firebase ID token in sessionStorage
       sessionStorage.setItem("firebaseIdToken", idToken);
@@ -39,7 +43,7 @@ const SignIn = () => {
       if (response.ok) {
         const userData = await response.json();
         console.log(userData)
-        localStorage.setItem("userData", JSON.stringify(userData));
+        await storeUserData();
         navigate("/");
       } else {
         console.error("Failed to fetch user data from backend.");

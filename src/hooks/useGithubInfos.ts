@@ -1,38 +1,27 @@
 import { useEffect, useState } from "react";
 
-export default function useGithubInfos(username: string | undefined) {
+export default function useGithubInfos() {
   const [followers, setFollowers] = useState<number>(0);
   const [languages, setLanguages] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!username) return;
+    const userDataString = localStorage.getItem("userData");
+    if (!userDataString) return;
 
-    const fetchData = async () => {
-      try {
-        const userRes = await fetch(`https://api.github.com/users/${username}`, {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
-          },
-        });
-        const userData = await userRes.json();
-        setFollowers(userData.followers);
+    try {
+      const userData = JSON.parse(userDataString);
+      setFollowers(userData.github?.followers ?? 0);
 
-        const repoRes = await fetch(`https://api.github.com/users/${username}/repos`, {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
-          },
-        });
-        const repos = await repoRes.json();
-        const langs = new Set<string>();
-        repos.forEach((r: any) => r.language && langs.add(r.language));
-        setLanguages(Array.from(langs));
-      } catch (err) {
-        console.error("GitHub info error", err);
-      }
-    };
+      const langsSet = new Set<string>();
+      userData.repos?.forEach((repo: any) => {
+        if (repo.language) langsSet.add(repo.language);
+      });
 
-    fetchData();
-  }, [username]);
+      setLanguages(Array.from(langsSet));
+    } catch (err) {
+      console.error("Failed to parse user data from localStorage", err);
+    }
+  }, []);
 
   return { followers, languages };
 }
