@@ -11,17 +11,23 @@ import { AuthProvider } from "./Contexts/AuthContext";
 import Organizations from "./pages/Organisations";
 import OrganizationDetails from "./pages/OrganisationsDetails";
 import Profile from "./pages/Profile";
+import Home from "./pages/Home"; // 🆕 Import de la page d’accueil
+import NotFound from "./pages/NotFound";
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Auth pages (no layout) */}
+          {/* 🏠 Page d’accueil publique */}
+          <Route path="/" element={<Home />} />
+
+          {/* 🔐 Authentification */}
           <Route path="/login" element={<SignIn />} />
 
-          {/* Protected routes wrapped with layout */}
+          {/* 🔒 Routes protégées (layout) */}
           <Route
-            path="/"
+            path="/app"
             element={
               <PrivateRoute>
                 <MainLayout />
@@ -35,12 +41,12 @@ function App() {
             <Route path="chatbot" element={<Chatbot />} />
             <Route path="organizations" element={<Organizations />} />
             <Route path="profile" element={<Profile />} />
-
             <Route
               path="organizations/:orgId"
               element={<OrganizationDetails />}
             />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
