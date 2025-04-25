@@ -54,7 +54,7 @@ export default function UserMenu() {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => navigate("/settings")}
+                    onClick={() => navigate("/app/settings")}
                     className={`${
                       active ? "bg-gray-100" : ""
                     } flex items-center w-full px-4 py-2`}
@@ -78,7 +78,7 @@ export default function UserMenu() {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => navigate("/profile")}
+                    onClick={() => navigate("/app/profile")}
                     className={`${
                       active ? "bg-gray-100" : ""
                     } flex items-center w-full px-4 py-2`}

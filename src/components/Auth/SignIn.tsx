@@ -44,7 +44,7 @@ const SignIn = () => {
         const userData = await response.json();
         console.log(userData)
         await storeUserData();
-        navigate("/");
+        navigate("/app");
       } else {
         console.error("Failed to fetch user data from backend.");
       }

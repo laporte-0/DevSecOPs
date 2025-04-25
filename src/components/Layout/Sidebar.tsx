@@ -9,12 +9,12 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-  { icon: GitBranch, label: "Pipelines", path: "/pipelines" },
-  { icon: LineChart, label: "Insights", path: "/insights" },
-  { icon: Users, label: "Organizations", path: "/organizations" },
-  { icon: Settings, label: "Settings", path: "/settings" },
-  { icon: MessageSquareMore, label: "Chatbot", path: "/chatbot" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/app" },
+  { icon: GitBranch, label: "Pipelines", path: "/app/pipelines" },
+  { icon: LineChart, label: "Insights", path: "/app/insights" },
+  { icon: Users, label: "Organizations", path: "/app/organizations" },
+  { icon: Settings, label: "Settings", path: "/app/settings" },
+  { icon: MessageSquareMore, label: "Chatbot", path: "/app/chatbot" },
 ];
 
 export default function Sidebar() {
@@ -28,7 +28,7 @@ export default function Sidebar() {
       <nav className="space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname.startsWith(item.path);
+          const isActive = location.pathname === item.path;
           return (
             <Link
               key={item.path}
