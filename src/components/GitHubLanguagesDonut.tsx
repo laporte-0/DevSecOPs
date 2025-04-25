@@ -6,8 +6,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { auth } from "../Config/firebaseConfigs";
 import { useEffect, useState } from "react";
+import { auth } from "../Config/firebaseConfigs";
 
 const COLORS = [
   "#4F46E5",
@@ -21,37 +21,61 @@ const COLORS = [
 export default function GitHubLanguagesDonut() {
   const username = auth.currentUser?.providerData[0]?.uid;
   const [data, setData] = useState<{ name: string; value: number }[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!username) return;
+    const token = sessionStorage.getItem("githubAccessToken");
+    if (!username || !token) return;
 
     const fetchLangs = async () => {
-      const res = await fetch(
-        `https://api.github.com/users/${username}/repos`,
-        {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
-          },
-        }
-      );
-      const repos = await res.json();
-      const langCount: Record<string, number> = {};
+      try {
+        const res = await fetch(
+          `https://api.github.com/users/${username}/repos`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-      for (const repo of repos) {
-        if (repo.language) {
-          langCount[repo.language] = (langCount[repo.language] || 0) + 1;
+        if (!res.ok) {
+          throw new Error("Échec de l'appel GitHub: " + res.status);
         }
+
+        const repos = await res.json();
+        const langCount: Record<string, number> = {};
+
+        for (const repo of repos) {
+          if (repo.language) {
+            langCount[repo.language] = (langCount[repo.language] || 0) + 1;
+          }
+        }
+
+        const pieData = Object.entries(langCount).map(([name, value]) => ({
+          name,
+          value,
+        }));
+
+        setData(pieData);
+      } catch (err: any) {
+        console.error(
+          "Erreur lors de la récupération des langages GitHub",
+          err
+        );
+        setError("Impossible de récupérer les langages utilisés.");
       }
-
-      const pieData = Object.entries(langCount).map(([name, value]) => ({
-        name,
-        value,
-      }));
-      setData(pieData);
     };
 
     fetchLangs();
   }, [username]);
+
+  if (error) {
+    return (
+      <div className="bg-white dark:bg-gray-800 p-4 rounded shadow border dark:border-gray-700">
+        <p className="text-red-500 text-sm">{error}</p>
+      </div>
+    );
+  }
 
   if (!data.length) return null;
 

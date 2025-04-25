@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
 import { Project } from "../pages/types";
 import { mockProjects } from "../services/mockProjects";
-import ScanHistorySection from "../components/ScanHistorySection";
 import OverviewSection from "../components/OverviewSection";
 import VulnerabilitySection from "../components/VulnerabilitySection";
 import ActivitySection from "../components/ActivitySection";
-import GitHubCard from "../components/GitHubCard";
-import RepoList from "../components/RepoList";
 import GitHubSidebar from "../components/GitHubSidebar";
+import SonarQubeReportSection from "../components/SonarQubeReportSection";
+import PluginScanOverview from "../components/plugins/PLuginScanOverview"; // ✅ Import du nouveau composant
+import SecurityLogsSection from "../components/SecurityLogsSection";
 
-const mockScoreHistory: {
-  [projectId: string]: { date: string; score: number }[];
-} = {
+const mockScoreHistory: Record<string, { date: string; score: number }[]> = {
   projectA: [
     { date: "2025-03-30", score: 78 },
     { date: "2025-03-31", score: 81 },
@@ -31,7 +29,7 @@ const mockScoreHistory: {
 const mockVulns = [
   {
     id: "vuln1",
-    level: "critical",
+    level: "critical" as const,
     file: "package.json",
     package: "express@4.17.1",
     fix: "Upgrade to 4.18.2",
@@ -40,7 +38,7 @@ const mockVulns = [
   },
   {
     id: "vuln2",
-    level: "medium",
+    level: "medium" as const,
     file: "src/utils/validator.ts",
     package: "custom sanitization",
     fix: "Refactor input check",
@@ -100,7 +98,7 @@ export default function Dashboard() {
       };
       setProjectData(updatedProject);
       setIsScanning(false);
-      setScanMessage("✅ Scan completed successfully. Security score updated.");
+      setScanMessage("✅ Scan terminé. Score mis à jour.");
     }, 2000);
   };
 
@@ -130,9 +128,9 @@ export default function Dashboard() {
         </span>
       </div>
 
-      {/* Tabs */}
+      {/* Onglets */}
       <div className="flex gap-4 border-b pb-2 mb-4 text-sm font-medium border-gray-200 dark:border-gray-700">
-        {["overview", "vulns", "activity", "history"].map((tab) => (
+        {["overview", "vulns", "activity", "sonarqube"].map((tab) => (
           <button
             key={tab}
             className={
@@ -147,25 +145,28 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Layout principal + GitHub sidebar */}
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 space-y-6">
           {activeTab === "overview" && (
-            <OverviewSection
-              projectData={projectData}
-              handleScan={handleScan}
-              isScanning={isScanning}
-              scanMessage={scanMessage}
-              scoreHistory={scoreHistory}
-            />
+            <>
+              <OverviewSection
+                projectData={projectData}
+                handleScan={handleScan}
+                isScanning={isScanning}
+                scanMessage={scanMessage}
+                scoreHistory={scoreHistory}
+              />
+              <SecurityLogsSection />
+              <PluginScanOverview /> {/* ✅ Ajout ici dans la vue overview */}
+            </>
           )}
           {activeTab === "vulns" && (
             <VulnerabilitySection vulnerabilities={mockVulns} />
           )}
-          {activeTab === "history" && <ScanHistorySection />}
           {activeTab === "activity" && (
             <ActivitySection projectData={projectData} />
           )}
+          {activeTab === "sonarqube" && <SonarQubeReportSection />} {/* ✅ */}
         </div>
 
         <aside className="shrink-0">

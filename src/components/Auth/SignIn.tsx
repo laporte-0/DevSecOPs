@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../Config/firebaseConfigs";
@@ -11,41 +11,50 @@ const SignIn = () => {
     try {
       setLoading(true);
       const provider = new GithubAuthProvider();
-      provider.setCustomParameters({
-        allow_signup: "true" // allow user to choose account, even if signed in
-      });
+      provider.setCustomParameters({ allow_signup: "true" });
 
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
       const credential = GithubAuthProvider.credentialFromResult(result);
       const accessToken = credential?.accessToken || "";
-      const idToken = await user.getIdToken();
 
-      // ✅ Store the Firebase ID token in sessionStorage
+      // ✅ Store tokens in session
+      sessionStorage.setItem("githubAccessToken", accessToken);
+      sessionStorage.setItem("githubUsername", user.providerData[0]?.uid || "");
+
+      // Optional Firebase token (if you need it later)
+      const idToken = await user.getIdToken();
       sessionStorage.setItem("firebaseIdToken", idToken);
 
-      // ✅ Send API call to backend with tokens
-      const response = await fetch("http://localhost:3000/api/users/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${idToken}`
-        },
-        body: JSON.stringify({ accessToken })
-      });
+      // Backend call (safe fallback)
+      try {
+        const provider = new GithubAuthProvider();
+        provider.setCustomParameters({ allow_signup: "true" });
 
-      // ✅ Save returned userData in localStorage
-      if (response.ok) {
-        const userData = await response.json();
-        console.log(userData)
-        localStorage.setItem("userData", JSON.stringify(userData));
-        navigate("/");
-      } else {
-        console.error("Failed to fetch user data from backend.");
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        const accessToken = credential?.accessToken || "";
+
+        const githubUsername = user.providerData[0]?.uid || ""; // 👈 nom d'utilisateur GitHub
+
+        sessionStorage.setItem("githubAccessToken", accessToken);
+        sessionStorage.setItem("githubUsername", githubUsername);
+        // ✅ Redirection directe sans backend
+        navigate("/app");
+      } catch (err: any) {
+        console.error("Échec de l'authentification GitHub :", err.message);
+      } finally {
+        setLoading(false);
       }
+
+      navigate("/dashboard"); // ✅ Redirige vers dashboard layout protégé
     } catch (err: any) {
       console.error("Échec de l'authentification GitHub :", err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,11 +63,11 @@ const SignIn = () => {
       {/* Branding */}
       <div className="w-1/2 bg-gray-900 text-white flex flex-col relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-800/30 via-transparent to-purple-900/30 z-0" />
-        <div className="absolute left-5  z-10 flex items-center gap-3">
+        <div className="absolute left-5 z-10 flex items-center gap-3">
           <img
             src="/assets/DevPortalLogo.png"
             alt="DevPortal Logo"
-            className="h-400 w-40 animate-pulse"
+            className="h-40 w-auto animate-pulse"
           />
         </div>
 
@@ -91,7 +100,7 @@ const SignIn = () => {
         </footer>
       </div>
 
-      {/* Connexion */}
+      {/* Connexion GitHub */}
       <div className="w-1/2 bg-white flex items-center justify-center p-10 relative">
         <div className="absolute bottom-0 right-0 h-24 w-24 bg-green-400 rounded-tl-3xl" />
 
@@ -138,7 +147,6 @@ const SignIn = () => {
                   className="h-5 w-5"
                   fill="currentColor"
                   viewBox="0 0 24 24"
-                  aria-hidden="true"
                 >
                   <path
                     fillRule="evenodd"
@@ -156,17 +164,15 @@ const SignIn = () => {
             <a href="#" className="underline">
               conditions
             </a>{" "}
-            et{" "}
+            et notre{" "}
             <a href="#" className="underline">
               politique de confidentialité
             </a>
             .
           </p>
+
           <p className="text-center text-sm text-gray-500 mt-6">
-            <a
-              href="/"
-              className="inline-block text-blue-600 hover:underline hover:text-blue-800"
-            >
+            <a href="/" className="text-blue-600 hover:underline">
               ← Retour à l’accueil
             </a>
           </p>
