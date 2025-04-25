@@ -18,71 +18,39 @@ export default function RecentCommits() {
   useEffect(() => {
     if (!username || !token) return;
 
-    const fetchCommits = async () => {
+    const fetchCommitsFromStorage = () => {
       setLoading(true);
       setError(null);
 
       try {
-        const repoRes = await fetch(
-          `https://api.github.com/users/${username}/repos`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
 
-        if (!repoRes.ok) {
-          throw new Error("Échec récupération repos");
-        }
+        // Get user data from localStorage
+        const userDataString = localStorage.getItem("userData");
+        if (!userDataString) return;
 
-        const repos = await repoRes.json();
+        const userData = JSON.parse(userDataString);
 
-        const commitPromises = repos.map(async (repo: any) => {
-          try {
-            const res = await fetch(
-              `https://api.github.com/repos/${username}/${repo.name}/commits`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
+        // Assuming the commits are stored under `userData.user.github.commits`
+        const commitsData: Commit[] = userData?.recentCommits || [];
 
-            if (!res.ok) return [];
+        // Sort commits by date and take the most recent 5
+        const sortedCommits = commitsData
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, 5);
 
-            const repoCommits = await res.json();
-
-            return repoCommits.slice(0, 1).map((c: any) => ({
-              repo: repo.name,
-              message: c.commit.message,
-              url: c.html_url,
-              author: c.commit.author.name,
-              date: c.commit.author.date,
-            }));
-          } catch {
-            return [];
-          }
-        });
-
-        const all = await Promise.all(commitPromises);
-        const flat = all
-          .flat()
-          .sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-          );
-
-        setCommits(flat.slice(0, 5));
-      } catch (e: any) {
-        console.error("Erreur commits :", e.message);
-        setError("Impossible de récupérer les commits GitHub.");
+        setCommits(sortedCommits);
+      } catch (e) {
+        console.error("Erreur lors de la lecture des commits :", e);
+        
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCommits();
-  }, [username, token]);
+
+    fetchCommitsFromStorage();
+  }, [username]);
+
 
   if (!username || !token) return null;
 

@@ -27,22 +27,16 @@ export default function GitHubLanguagesDonut() {
     const token = sessionStorage.getItem("githubAccessToken");
     if (!username || !token) return;
 
-    const fetchLangs = async () => {
+
+    const fetchLangsFromStorage = () => {
+      const userDataString = localStorage.getItem("userData");
+      if (!userDataString) return;
+
       try {
-        const res = await fetch(
-          `https://api.github.com/users/${username}/repos`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const userData = JSON.parse(userDataString);
 
-        if (!res.ok) {
-          throw new Error("Échec de l'appel GitHub: " + res.status);
-        }
-
-        const repos = await res.json();
+        // Assuming userData.user.github.repos contains the repository information
+        const repos = userData?.repos || [];
         const langCount: Record<string, number> = {};
 
         for (const repo of repos) {
@@ -55,18 +49,14 @@ export default function GitHubLanguagesDonut() {
           name,
           value,
         }));
-
+        
         setData(pieData);
-      } catch (err: any) {
-        console.error(
-          "Erreur lors de la récupération des langages GitHub",
-          err
-        );
-        setError("Impossible de récupérer les langages utilisés.");
+      } catch (error) {
+        console.error("Error parsing user data from localStorage:", error);
       }
     };
 
-    fetchLangs();
+    fetchLangsFromStorage();
   }, [username]);
 
   if (error) {

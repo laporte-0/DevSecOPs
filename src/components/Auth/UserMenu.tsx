@@ -7,6 +7,13 @@ import { useNavigate } from "react-router-dom";
 export default function UserMenu() {
   const navigate = useNavigate();
   const user = auth.currentUser;
+  let userName ; 
+  const userDataString = localStorage.getItem("userData");
+  if (userDataString){
+    const userData = JSON.parse(userDataString);
+    userName = userData.github.userName;
+  }
+    
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -29,7 +36,7 @@ export default function UserMenu() {
             </div>
           )}
           <span className="text-sm font-medium text-gray-700">
-            {user?.displayName || "Utilisateur"}
+            {userName || "Utilisateur"}
           </span>
           <ChevronDown className="w-4 h-4 text-gray-600" />
         </Menu.Button>
@@ -47,7 +54,7 @@ export default function UserMenu() {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => navigate("/settings")}
+                    onClick={() => navigate("/app/settings")}
                     className={`${
                       active ? "bg-gray-100" : ""
                     } flex items-center w-full px-4 py-2`}
@@ -71,7 +78,7 @@ export default function UserMenu() {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => navigate("/profile")}
+                    onClick={() => navigate("/app/profile")}
                     className={`${
                       active ? "bg-gray-100" : ""
                     } flex items-center w-full px-4 py-2`}

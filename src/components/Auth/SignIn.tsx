@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../Config/firebaseConfigs";
+import { storeUserData } from "../../hooks/storeUserInfo";
+
+
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -27,27 +30,25 @@ const SignIn = () => {
       const idToken = await user.getIdToken();
       sessionStorage.setItem("firebaseIdToken", idToken);
 
-      // Backend call (safe fallback)
-      try {
-        const provider = new GithubAuthProvider();
-        provider.setCustomParameters({ allow_signup: "true" });
+      // ✅ Send API call to backend with tokens
+      const response = await fetch("http://localhost:3000/api/users/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`
+        },
+        body: JSON.stringify({ accessToken })
+      });
 
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-
-        const credential = GithubAuthProvider.credentialFromResult(result);
-        const accessToken = credential?.accessToken || "";
-
-        const githubUsername = user.providerData[0]?.uid || ""; // 👈 nom d'utilisateur GitHub
-
-        sessionStorage.setItem("githubAccessToken", accessToken);
-        sessionStorage.setItem("githubUsername", githubUsername);
-        // ✅ Redirection directe sans backend
+      // ✅ Save returned userData in localStorage
+      if (response.ok) {
+        const userData = await response.json();
+        console.log(userData)
+        await storeUserData();
         navigate("/app");
-      } catch (err: any) {
-        console.error("Échec de l'authentification GitHub :", err.message);
-      } finally {
-        setLoading(false);
+      } else {
+        console.error("Failed to fetch user data from backend.");
+
       }
 
       navigate("/dashboard"); // ✅ Redirige vers dashboard layout protégé
