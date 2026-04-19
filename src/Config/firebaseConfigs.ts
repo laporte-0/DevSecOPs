@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC0I51WHAL6qpvxxLwwSG3pTIiXean5Py8",
+  apiKey: "",
   authDomain: "devsecops-3ef10.firebaseapp.com",
   projectId: "devsecops-3ef10",
   storageBucket: "devsecops-3ef10.firebasestorage.app",
